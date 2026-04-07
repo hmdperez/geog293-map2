@@ -85,13 +85,19 @@ def get_data():
                     }
                 })
 
-                return {
-                    "type": "FeatureCollection",
-                    "features": features
-                }
+            return {
+                "type": "FeatureCollection",
+                "features": features
+            }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Serve static files (HTML, CSS, JS) from the parent directory
-app.mount("/", StaticFiles(directory="../", html=True), name="static")
+# Serve the frontend only when index.html exists in the deployed filesystem.
+frontend_dir = Path(__file__).resolve().parent.parent
+if (frontend_dir / "index.html").exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="static")
+else:
+    @app.get("/")
+    def root():
+        return {"status": "ok", "message": "API is running. Open /docs or /data."}
