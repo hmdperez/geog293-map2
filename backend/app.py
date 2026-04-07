@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from psycopg2 import pool
+from psycopg_pool import ConnectionPool
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -26,15 +26,14 @@ def get_db_pool():
             "Missing database environment variables: " + ", ".join(missing)
         )
 
-    db_pool = pool.SimpleConnectionPool(
-        minconn=1,
-        maxconn=10,
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASS"),
+    conninfo = (
+        f"host={os.getenv('DB_HOST')} "
+        f"port={os.getenv('DB_PORT')} "
+        f"dbname={os.getenv('DB_NAME')} "
+        f"user={os.getenv('DB_USER')} "
+        f"password={os.getenv('DB_PASS')}"
     )
+    db_pool = ConnectionPool(conninfo=conninfo, min_size=1, max_size=10)
     return db_pool
 
 app = FastAPI()
@@ -51,10 +50,9 @@ app.add_middleware(
 def get_data():
     try:
         conn_pool = get_db_pool()
-        conn = conn_pool.getconn()
-        try:
-            cur = conn.cursor()
-            cur.execute("""
+        with conn_pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
                 SELECT
                     place, country, title, period, description,
                     safety, inclusiveness, women_spaces,
@@ -62,9 +60,8 @@ def get_data():
                     ST_Y(geom) AS lat,
                     id
                 FROM places
-            """)
-            rows = cur.fetchall()
-            cur.close()
+                """)
+                rows = cur.fetchall()
 
             features = []
             for row in rows:
@@ -88,13 +85,10 @@ def get_data():
                     }
                 })
 
-            return {
-                "type": "FeatureCollection",
-                "features": features
-            }
-
-        finally:
-            conn_pool.putconn(conn)
+                return {
+                    "type": "FeatureCollection",
+                    "features": features
+                }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
