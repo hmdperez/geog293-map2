@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Geog 293: Map 2 Project</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@5.22.0/dist/maplibre-gl.css"
+    />
+    <script src="https://unpkg.com/maplibre-gl@5.22.0/dist/maplibre-gl.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="main.css" />
+    <style>
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div id="sidebar-header">
+          <h1>A Résumé in Coordinates</h1>
+          <!-- <h2>Countermapping the Spaces I Moved Through as a Woman</h2> -->
+          <p>Countermapping the Spaces I Moved Through as a Woman</p>
+        </div>
+
+        <div id="sidebar-hint">Select a pin to view details</div>
+
+        <!-- Scrollable list of experiences -->
+        <div id="exp-list"></div>
+      </aside>
+
+      <!-- Map -->
+      <div id="map"></div>
+
+      <!-- Detail panel (shown on pin click) -->
+      <aside id="detail">
+        <div id="detail-country"></div>
+        <div id="detail-role"></div>
+        <div id="detail-place"></div>
+        <div id="detail-org"></div>
+
+        <div class="period-badge" id="detail-period"></div>
+        <div class="detail-section">
+          <div class="detail-label">About</div>
+          <div class="detail-text" id="detail-desc"></div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Feeling of Safety</div>
+          <div id="detail-safety"></div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Inclusiveness</div>
+          <div id="detail-inclusiveness"></div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">
+            Availability of Women-Friendly Spaces
+          </div>
+          <div id="detail-women-spaces"></div>
+        </div>
+      </aside>
+    </div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
