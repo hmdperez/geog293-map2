@@ -93,8 +93,8 @@ def get_data():
                 "features": features
             }
 
-        finaconny:
-            db_pool.putconn(conn)
+        finally:
+            conn_pool.putconn(conn)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
